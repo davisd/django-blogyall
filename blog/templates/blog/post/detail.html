@@ -1,0 +1,18 @@
+<!-- HTML templates are for example only and aren't guaranteed to work -->
+{% load comments %}
+<html>
+    <head>
+        <title>{{ blog_post.title }}</title>
+    </head>
+    <body>
+        <h1><a href="{{ blog_post.get_absolute_url }}">{{ blog_post.title|title }}</a></h1>
+        <div>{{ blog_post.content }}</div>
+        <div>
+            <h3>Comments</h3>
+            {% render_comment_list for blog_post %}
+
+            {% render_comment_form for blog_post %}
+            
+        </div>
+    </body>
+</html>

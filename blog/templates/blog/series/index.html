@@ -1,0 +1,29 @@
+<!-- HTML templates are for example only and aren't guaranteed to work -->
+<html>
+    <head>
+        <title>Blog Series Index</title>
+    </head>
+    <body>
+        <h1>Series</h1>
+        {% if blog_seriess %}
+        <table>
+            <thead><tr>
+                <th>Series</th>
+                <th>Posts</th>
+                <th>Summary</th>
+                <th>Created</th>
+            </tr></thead>
+            <tbody>
+                {% for blog_series in blog_seriess %}
+                <tr>
+                    <td><a href="{{ blog_series.get_absolute_url }}">{{ blog_series.title }}</a></td>
+                    <td>{{ blog_series.posts.get_published_posts.count }}</td>
+                    <td>{{ blog_series.summary }}</td>
+                    <td>{{ blog_series.created_on }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </body>
+</html>

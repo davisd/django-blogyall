@@ -1,0 +1,60 @@
+<!-- HTML templates are for example only and aren't guaranteed to work -->
+{% load comments %}
+{% load tagging_tags %}
+{% load blog_tags %}
+
+{% get_blog_post_archive as archive %}
+
+<html>
+    <head>
+        <title>Blog Posts</title>
+    </head>
+    <body>
+        <h1>Archive</h1>
+        <ul>
+            {% for year, months in archive.items %}
+            <li>
+                {{ year }}
+                <ul>
+                    {% for month, posts in months.items %}
+                    <li>
+                        {{ month|month_name|slice:":3"|capfirst }}
+                        <ul>
+                            {% for post in posts %}
+                            <li><a href="{{ post.get_absolute_url }}">{{ post }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor  %}
+        </ul>
+    
+        <label>Posts</label>
+        <table>
+            <thead><tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Tags</th>
+                <th>Comments</th>
+            </tr></thead>
+            <tbody>
+                {% for post in blog_posts %}
+                <tr>
+                    <td>{{ post.publish_date }}</td>
+                    <td><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></td>
+                    {% get_comment_count for post as comment_count %}
+                    <td>
+                        {% tags_for_object post as tags %}
+                        {% for tag in tags %}
+                        <a href="{% blog_tag_get_absolute_url tag %}">{{ tag }}</a>
+                        {% endfor %}
+                    </td>
+                    <td>{{ comment_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>

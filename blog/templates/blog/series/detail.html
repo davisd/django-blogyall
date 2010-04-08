@@ -1,0 +1,40 @@
+<!-- HTML templates are for example only and aren't guaranteed to work -->
+{% load comments %}
+{% load tagging_tags %}
+{% load blog_tags %}
+<html>
+    <head>
+        <title>Blog Series: {{ blog_series.title }}</title>
+    </head>
+    <body>
+        <h1>{{ blog_series.title }}</h1>
+        <p>{{ blog_series.preface }}</p>
+        {% if blog_series.posts %}
+        <label>Posts</label>
+        <table>
+            <thead><tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Tags</th>
+                <th>Comments</th>
+            </tr></thead>
+            <tbody>
+                {% for post in blog_series.posts.get_published_posts %}
+                <tr>
+                    <td>{{ post.publish_date }}</td>
+                    <td><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></td>
+                    {% get_comment_count for post as comment_count %}
+                    <td>
+                        {% tags_for_object post as tags %}
+                        {% for tag in tags %}
+                        <a href="{% blog_tag_get_absolute_url tag %}">{{ tag }}</a>
+                        {% endfor %}
+                    </td>
+                    <td>{{ comment_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </body>
+</html>

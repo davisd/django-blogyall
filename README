@@ -1,0 +1,33 @@
+django-blogyall
+===============
+http://www.davisd.com/django-blogyall
+django-blogyall is the reusable blog application developed for
+www.davisd.com
+
+Author
+======
+David Davis
+http://www.davisd.com
+
+Dependencies
+============
+
+1. django-tagging
+ 
+Notes: Dependencies
+================
+
+I do not believe in WYSIWYG or front-end markup-enhancing dependencies for
+reusable apps, those choices should be left to the application consumer.
+As-is, entries are editable in a standard TextBox.  Feel free to change
+the widget!
+
+I highly recommend sorl-thumbnail for use in your templates for displaying
+resized and cropped images.
+
+Notes: Static content
+=====================
+
+When images are uploaded in the admin, they will be sent to:
+MEDIA_ROOT/apps/blogyall/images
+Make sure the webserver has write-permission to that folder.

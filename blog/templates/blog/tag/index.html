@@ -1,0 +1,28 @@
+<!-- HTML templates are for example only and aren't guaranteed to work -->
+{% load tagging_tags %}
+{% load blog_tags %}
+<html>
+    <head>
+        <title>Blog Tag Index</title>
+    </head>
+    <body>
+        <h1>Tags</h1>
+        {% if blog_tags %}
+        <table>
+            <thead><tr>
+                <th>Tag</th>
+                <th>Posts</th>
+            </tr></thead>
+            <tbody>
+                {% for blog_tag in blog_tags %}
+                <tr>
+                    <td><a href="{% blog_tag_get_absolute_url blog_tag %}">{{ blog_tag }}</a></td>
+                    {% get_blog_tag_posts blog_tag as posts %}
+                    <td>{{ posts.count }} posts</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </body>
+</html>

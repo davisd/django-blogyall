@@ -1,0 +1,25 @@
+<!-- HTML templates are for example only and aren't guaranteed to work -->
+<html>
+    <head>
+        <title>Blog Category Index</title>
+    </head>
+    <body>
+        <h1>Categories</h1>
+        {% if blog_categories %}
+        <table>
+            <thead><tr>
+                <th>Category</th>
+                <th>Posts</th>
+            </tr></thead>
+            <tbody>
+                {% for blog_category in blog_categories %}
+                <tr>
+                    <td><a href="{{ blog_category.get_absolute_url }}">{{ blog_category.title }}</a></td>
+                    <td>{{ blog_category.posts.get_published_posts.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </body>
+</html>
