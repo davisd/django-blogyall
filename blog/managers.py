@@ -67,7 +67,7 @@ class PostManager(models.Manager):
         """
         return self.build_query(require_published=True, require_featured=True)
     
-    def get_post_archive(self, year=None, month=None, category_slug=None, tag=None):
+    def get_post_archive(self, require_published=True, year=None, month=None, category_slug=None, tag=None):
         """
         Returns a Post Archive
         
@@ -78,7 +78,7 @@ class PostManager(models.Manager):
         # This was originally done as a dictionary, which made more since.
         # Until you iterate through it's keys, items in the template and everything is out of order.
         # Dictionaries can't guarantee sort order.
-        posts = self.build_query(require_published=True, year=year, month=month, category_slug=category_slug, tag=tag)
+        posts = self.build_query(require_published=require_published, year=year, month=month, category_slug=category_slug, tag=tag)
         post_archive = {}
         for post in posts.order_by('-publish_date'):
             if not post_archive.has_key(post.publish_date.year):
