@@ -97,7 +97,10 @@ class Post(models.Model):
         get_latest_by = 'publish_date'
         
     def __unicode__(self):
-        return self.title
+        if self.is_published:
+            return self.title
+        else:
+            return '%s (DRAFT)' % (self.title,)
 
     @property
     def post_categories_string(self):
