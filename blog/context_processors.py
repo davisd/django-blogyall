@@ -85,8 +85,12 @@ def blog_post_processor(request, year, month, day, slug):
     """
     # is this user staff?  Determines published post display
     is_staff = request.user.is_staff
-    try:        
-        post = Post.objects.get(is_published = not is_staff, publish_date__year=year, publish_date__month=month, publish_date__day=day, slug=slug)
+    try:
+        if is_staff:
+            post = Post.objects.get(publish_date__year=year, publish_date__month=month, publish_date__day=day, slug=slug)
+        else:
+            post = Post.objects.get(is_published=True, publish_date__year=year, publish_date__month=month, publish_date__day=day, slug=slug)
+            
         return {'blog_post': post}
     except Post.DoesNotExist:
         raise Http404
