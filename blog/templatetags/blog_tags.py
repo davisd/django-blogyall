@@ -4,6 +4,7 @@ from django import template
 import django.core.urlresolvers
 from django.db import models
 from django.utils import dates
+from django.template import resolve_variable
 
 from tagging.models import TaggedItem
 
@@ -40,19 +41,27 @@ class BlogTagPostsNode(template.Node):
     def __init__(self, tag, var_name):
         self.args = dict(tag=tag, var_name=var_name)
     def render(self, context):
+        # is this user staff?  Determines published post display
+        is_staff = resolve_variable('user', context).is_staff
         tag = lit_or_val(self.args['tag'], context)
         var_name = self.args['var_name']
-        context[var_name] = TaggedItem.objects.get_by_model(Post.objects.get_published_posts(), tag)
+        if not is_staff:
+            model_query = Post.objects.get_published_posts()
+        else:
+            model_query = Post.objects.all()
+        context[var_name] = TaggedItem.objects.get_by_model(model_query, tag)
         return ''
     
 class PostArchiveNode(template.Node):
     def __init__(self, var_name, year=None, month=None):
         self.args = dict(var_name=var_name, year=year, month=month)        
     def render(self, context):
+        # is this user staff?  Determines published post display
+        is_staff = resolve_variable('user', context).is_staff
         var_name = self.args['var_name']
         year = lit_or_val(self.args['year'], context)
         month = lit_or_val(self.args['month'], context)
-        context[var_name] = Post.objects.get_post_archive(year=year, month=month)
+        context[var_name] = Post.objects.get_post_archive(require_published=(not is_staff), year=year, month=month)
         return ''
 
 def do_get_blog_tag_posts(parser, token):
