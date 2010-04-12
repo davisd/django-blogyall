@@ -52,7 +52,9 @@ def blog_posts_processor(request, year=None, month=None, category_slug=None, ser
     blog_tag (if a tag was supplied)
     
     """
-    posts = Post.objects.build_query(require_published=True, year=year, month=month, category_slug=category_slug, series_slug=series_slug, tag=tag, require_featured=require_featured)
+    # is this user staff?  Determines published post display
+    is_staff = request.user.is_staff
+    posts = Post.objects.build_query(require_published = not is_staff, year=year, month=month, category_slug=category_slug, series_slug=series_slug, tag=tag, require_featured=require_featured)
     
     if max_posts != None:
         posts = posts[start_post-1:max_posts]
@@ -81,8 +83,10 @@ def blog_post_processor(request, year, month, day, slug):
     Blog post processor
     Returns a dictionary containing: blog_post
     """
+    # is this user staff?  Determines published post display
+    is_staff = request.user.is_staff
     try:        
-        post = Post.objects.get(is_published=True, publish_date__year=year, publish_date__month=month, publish_date__day=day, slug=slug)
+        post = Post.objects.get(is_published = not is_staff, publish_date__year=year, publish_date__month=month, publish_date__day=day, slug=slug)
         return {'blog_post': post}
     except Post.DoesNotExist:
         raise Http404
@@ -101,9 +105,12 @@ def blog_category_processor(request, slug):
     Category processor
     Returns a dictionary containing: blog_category
     """
+    # is this user staff?  Determines published post display
+    is_staff = request.user.is_staff
+    posts = Post.objects.build_query(require_published = not is_staff, category_slug=slug)
     try:        
         category = Category.objects.get(slug=slug)
-        return {'blog_category': category}
+        return{'blog_category': category, 'blog_posts': posts}
     except Category.DoesNotExist:
         raise Http404
     
@@ -121,9 +128,12 @@ def blog_series_processor(request, slug):
     Series processor
     Returns a dictionary containing: blog_series
     """
+    # is this user staff?  Determines published post display
+    is_staff = request.user.is_staff
+    posts = Post.objects.build_query(require_published = not is_staff, series_slug=slug)
     try:
         series = Series.objects.get(slug=slug)
-        return {'blog_series': series}
+        return {'blog_series': series, 'blog_posts': posts}
     except Series.DoesNotExist:
         raise Http404
 
@@ -143,7 +153,13 @@ def blog_tag_processor(request, tag):
     Tag processor
     Returns a dictionary containing: blog_tag, blog_posts
     """
+    # is this user staff?  Determines published post display
+    is_staff = request.user.is_staff
+    if not is_staff:
+        blog_posts = TaggedItem.objects.get_by_model(Post.objects.get_published_posts(), [tag,])
+    else:
+        blog_posts = TaggedItem.objects.get_by_model(Post.objects.all(), [tag,])
     return {
         'blog_tag': get_object_or_404(Tag, name=tag),
-        'blog_posts': TaggedItem.objects.get_by_model(Post.objects.get_published_posts(), [tag,])
+        'blog_posts': blog_posts,
         }
