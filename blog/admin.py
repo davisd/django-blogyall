@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.contenttypes import generic
 from django.contrib.comments.models import Comment
 
-from models import PostImage, Post, Series, Comment, Category
+from models import PostImage, Post, Series, Category
 
 class PostImageInline(admin.StackedInline):
     """
