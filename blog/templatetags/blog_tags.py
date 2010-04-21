@@ -73,7 +73,6 @@ def do_get_blog_tag_posts(parser, token):
       {% get_blog_tag_posts [tag_name] as [varname] %}
     
     tag should be a variable or a quoted string
-    TODO: Use the "for" word...
 
     Example::
     
@@ -149,7 +148,6 @@ def blog_tag_get_absolute_url(tag):
       {% blog_tag_get_absolute_url [tag] %}
     
     tag should be a variable or a quoted string
-    TODO: Check that the quoted string thing works...
     
     Example::
     

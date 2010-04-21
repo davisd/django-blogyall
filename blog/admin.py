@@ -23,7 +23,7 @@ class CommentInline(generic.GenericStackedInline):
     Generic Comment Inline
     """
     model = Comment
-    # specify the fk or the generic realtion won't work properly
+    # specify the fk or the generic relation won't work properly
     ct_fk_field = 'object_pk'
     extra=0
     
