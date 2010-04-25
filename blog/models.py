@@ -4,7 +4,9 @@ from django.db import models
 from django.contrib.comments.models import Comment
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
+from django.contrib.sitemaps import ping_google
 from django.db.models import permalink
+from django.conf import settings
 
 from tagging.models import Tag, TaggedItem
 from tagging.fields import TagField
@@ -92,6 +94,23 @@ class Post(models.Model):
     # Set the manager
     objects = PostManager()
     
+    def save(self, *args, **kwargs):
+        if (getattr(settings, 'BLOG_PING_GOOGLE', False) == True) and (getattr(settings, 'DEBUG', True) == False):
+            if self.is_published and self.publish_date <= datetime.datetime.now():
+                if not self.pk:
+                    try:
+                        ping_google()
+                    except:
+                        pass
+                else:
+                    old_post = Post.objects.get(pk=self.pk)
+                    if old_post.is_published == False:
+                        try:
+                            ping_google()
+                        except:
+                            pass
+        super(Post, self).save(*args, **kwargs)
+
     class Meta:
         ordering = ('-publish_date',)
         get_latest_by = 'publish_date'
