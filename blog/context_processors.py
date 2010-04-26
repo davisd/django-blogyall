@@ -25,19 +25,15 @@ def context_processor(target):
       )
       
     """
-    def wrapper(*args, **kwargs):
-        # hack implementation
-        caller_stack = inspect.stack()[1]
-        module = inspect.getmodule(caller_stack[0])
-        if module == django.template.context:
+    def cp_wrapper(*args, **kwargs):
+        if (len(args) == 1 and len(kwargs) == 0) or (len(args) == 0 and len(kwargs) == 1 and 'request' in kwargs):
             return target(*args, **kwargs)
         else:
-            def get_processor(request):            
+            def get_processor(request):
                 return target(request, *args, **kwargs)
             return get_processor
-    return wrapper
-
-
+    return cp_wrapper
+            
 @context_processor
 def blog_posts_processor(request, year=None, month=None, category_slug=None, series_slug=None, tag=None, require_featured=False, start_post=1, max_posts=None):
     """
