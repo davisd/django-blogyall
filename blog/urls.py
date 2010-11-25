@@ -1,5 +1,5 @@
 from django.conf.urls.shortcut import patterns
-from blog.syndication import PostFeed
+from syndication import PostFeed
 
 urlpatterns = patterns('blog.views',
     (r'^$', 'post_index'),
