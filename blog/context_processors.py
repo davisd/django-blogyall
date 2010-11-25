@@ -3,7 +3,6 @@ from tagging.models import Tag, TaggedItem
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 
-import inspect
 import django.template.context
 
 def context_processor(target):
