@@ -5,7 +5,7 @@ setup(
     version='1.0.0',
     author='David Davis',
     author_email='davisd@davisd.com',
-    packages=['blogyall',],
+    packages=['blog',],
     url='http://www.davisd.com/projects/django-blogyall',
     license='LICENSE',
     description='django-blogyall is the reusable blog application developed '\
