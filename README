@@ -17,8 +17,6 @@ Dependencies
 Notes: Dependencies
 ================
 
-I do not believe in WYSIWYG or front-end markup-enhancing dependencies for
-reusable apps, those choices should be left to the application consumer.
 As-is, entries are editable in a standard TextBox.  Feel free to change
 the widget!
 
