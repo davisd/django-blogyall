@@ -39,23 +39,27 @@ def context_processor(target):
 @context_processor
 def blog_posts_processor(request, year=None, month=None, category_slug=None,
     series_slug=None, tag=None, require_featured=False, start_post=1,
-    max_posts=None):
+    max_posts=None,
+    posts_context_name='posts',
+    year_context_name='year', month_context_name='month',
+    category_context_name='category', series_context_name='series',
+    tag_context_name='tag'):
     """
     Return a dictionary containing:
     
-    blog_posts
-    blog_posts_archive_year (if supplied)
-    blog_posts_archive_month (if supplied)
-    blog_category (if a slug was supplied)
-    blog_series (if a slug was supplied)
-    blog_tag (if a tag was supplied)
+    posts
+    archive year (if supplied)
+    archive month (if year and month supplied)
+    category (if a slug was supplied)
+    series (if a slug was supplied)
+    tag (if a tag was supplied)
     
     """
     # is this user staff?  Determines published post display
     is_staff = request.user.is_staff
     posts = Post.objects.build_query(require_published = not is_staff,
-    year=year, month=month, category_slug=category_slug,
-    series_slug=series_slug, tag=tag, require_featured=require_featured)
+        year=year, month=month, category_slug=category_slug,
+        series_slug=series_slug, tag=tag, require_featured=require_featured)
     
     if max_posts != None:
         posts = posts[start_post-1:max_posts]
@@ -63,25 +67,26 @@ def blog_posts_processor(request, year=None, month=None, category_slug=None,
         posts = posts[start_post-1:]
             
     c = {
-        'blog_posts': posts,
+        posts_context_name: posts,
     }
     if year:
-        c['blog_posts_archive_year'] = year
+        c[year_context_name] = year
         if month:
-            c['blog_posts_archive_month'] = month
+            c[month_context_name] = month
     if category_slug:
-        c['blog_category'] = get_object_or_404(Category, slug=category_slug)
+        c[category_context_name] = get_object_or_404(
+            Category, slug=category_slug)
     if series_slug:
-        c['blog_series'] = get_object_or_404(Series, slug=series_slug)
+        c[series_context_name] = get_object_or_404(Series, slug=series_slug)
     if tag:
-        c['blog_tag'] = tag
+        c[tag_context_name] = tag
     return c
         
 
 @context_processor
-def blog_post_processor(request, year, month, day, slug):
+def blog_post_processor(request, year, month, day, slug, context_name='post'):
     """
-    Return a dictionary containing: blog_post
+    Return a dictionary containing a post
     """
     # is this user staff?  Determines published post display
     is_staff = request.user.is_staff
@@ -93,21 +98,21 @@ def blog_post_processor(request, year, month, day, slug):
             post = Post.objects.get(is_published=True, publish_date__year=year,
                 publish_date__month=month, publish_date__day=day, slug=slug)
             
-        return {'blog_post': post}
+        return {context_name: post}
     except Post.DoesNotExist:
         raise Http404
     
 @context_processor
-def blog_categories_processor(request):
+def blog_categories_processor(request, context_name='categories'):
     """
-    Return a dictionary containing: blog_categories
+    Return a dictionary containing categories
     """
-    return {'blog_categories': Category.objects.all()}
+    return {context_name: Category.objects.all()}
 
 @context_processor
-def blog_category_processor(request, slug):
+def blog_category_processor(request, slug, context_name='category'):
     """
-    Return a dictionary containing: blog_category
+    Return a dictionary containing a category
     """
     # is this user staff?  Determines published post display
     is_staff = request.user.is_staff
@@ -115,21 +120,21 @@ def blog_category_processor(request, slug):
         require_published = not is_staff, category_slug=slug)
     try:        
         category = Category.objects.get(slug=slug)
-        return{'blog_category': category, 'blog_posts': posts}
+        return{context_name: category}
     except Category.DoesNotExist:
         raise Http404
     
 @context_processor
-def blog_seriess_processor(request):
+def blog_seriess_processor(request, context_name='seriess'):
     """
-    Return a dictionary containing: blog_seriess
+    Return a dictionary containing seriess
     """
-    return {'blog_seriess': Series.objects.all()}
+    return {context_name: Series.objects.all()}
 
 @context_processor
-def blog_series_processor(request, slug):
+def blog_series_processor(request, slug, context_name='series'):
     """
-    Return a dictionary containing: blog_series
+    Return a dictionary containing a series
     """
     # is this user staff?  Determines published post display
     is_staff = request.user.is_staff
@@ -137,33 +142,24 @@ def blog_series_processor(request, slug):
         require_published = not is_staff, series_slug=slug)
     try:
         series = Series.objects.get(slug=slug)
-        return {'blog_series': series, 'blog_posts': posts}
+        return {context_name: series}
     except Series.DoesNotExist:
         raise Http404
 
 @context_processor
-def blog_tags_processor(request):
+def blog_tags_processor(request, context_name='tags'):
     """
-    Return a dictionary containing: blog_tags
+    Return a dictionary containing tags
     """
     return {
-        'blog_tags': Tag.objects.usage_for_model(Post)
+        context_name: Tag.objects.usage_for_model(Post)
     }
 
 @context_processor
-def blog_tag_processor(request, tag):
+def blog_tag_processor(request, tag, context_name='tag'):
     """
-    Return a dictionary containing: blog_tag, blog_posts
+    Return a dictionary containing a tag
     """
-    # is this user staff?  Determines published post display
-    is_staff = request.user.is_staff
-    if not is_staff:
-        blog_posts = TaggedItem.objects.get_by_model(
-            Post.objects.get_published_posts(), [tag,])
-    else:
-        blog_posts = TaggedItem.objects.get_by_model(
-            Post.objects.all(), [tag,])
     return {
-        'blog_tag': get_object_or_404(Tag, name=tag),
-        'blog_posts': blog_posts,
+        context_name: get_object_or_404(Tag, name=tag),
         }
