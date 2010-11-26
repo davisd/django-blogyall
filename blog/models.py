@@ -5,6 +5,7 @@ from django.contrib.comments.models import Comment
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from django.contrib.sitemaps import ping_google
+from django.contrib.comments.moderation import CommentModerator, moderator
 from django.db.models import permalink
 from django.conf import settings
 
@@ -171,3 +172,11 @@ class PostImage(models.Model):
     
     class Meta:
         ordering = ('post', 'gallery_position', 'title',)
+
+class PostModerator(CommentModerator):
+    email_notification = True
+    auto_moderate_field='publish_date'
+    moderate_after=7
+    enable_field='allow_comments'
+
+moderator.register(Post, PostModerator)
