@@ -31,3 +31,8 @@ Notes: Static content
 When images are uploaded in the admin, they will be sent to:
 MEDIA_ROOT/apps/blogyall/images
 Make sure the webserver has write-permission to that folder.
+
+Notes: Settings
+===============
+To have the blog app attempt to ping google when a published blog post is saved,
+set BLOG_PING_GOOGLE=True in your settings.py
