@@ -123,3 +123,11 @@ class PostManager(models.Manager):
                 )
             ).values('tag_id')
         )
+
+class PublishedPostManager(PostManager):
+    """
+    Published Post Manager
+    """
+    def get_query_set(self):
+        return super(PublishedPostManager, self).get_query_set().filter(is_published=True)
+    

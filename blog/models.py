@@ -11,7 +11,7 @@ from django.conf import settings
 from tagging.models import Tag, TaggedItem
 from tagging.fields import TagField
 
-from managers import PostManager, PostImageManager
+from managers import PostManager, PublishedPostManager, PostImageManager
 
 class Series(models.Model):
     """
@@ -142,6 +142,15 @@ class Post(models.Model):
         """
         return self.get_next_by_publish_date(is_published=True,
             publish_date__lt=datetime.now)
+    
+class PublishedPost(Post):
+    """
+    Published Post Proxy model
+    """
+    objects = PublishedPostManager()
+    
+    class Meta:
+        proxy = True
     
 class PostImage(models.Model):
     """
