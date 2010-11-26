@@ -1,9 +1,10 @@
-from models import Post, Series, Category
-from tagging.models import Tag, TaggedItem
 from django.shortcuts import get_object_or_404
 from django.http import Http404
-
 import django.template.context
+
+from tagging.models import Tag, TaggedItem
+
+from models import Post, Series, Category
 
 def context_processor(target):
     """
@@ -25,7 +26,9 @@ def context_processor(target):
       
     """
     def cp_wrapper(*args, **kwargs):
-        if (len(args) == 1 and len(kwargs) == 0) or (len(args) == 0 and len(kwargs) == 1 and 'request' in kwargs):
+        if (
+            len(args) == 1 and len(kwargs) == 0) \
+            or (len(args) == 0 and len(kwargs) == 1 and 'request' in kwargs):
             return target(*args, **kwargs)
         else:
             def get_processor(request):
@@ -34,10 +37,11 @@ def context_processor(target):
     return cp_wrapper
             
 @context_processor
-def blog_posts_processor(request, year=None, month=None, category_slug=None, series_slug=None, tag=None, require_featured=False, start_post=1, max_posts=None):
+def blog_posts_processor(request, year=None, month=None, category_slug=None,
+    series_slug=None, tag=None, require_featured=False, start_post=1,
+    max_posts=None):
     """
-    Accepts Post attribute configurations for matching and
-    returns a dictionary containing:
+    Return a dictionary containing:
     
     blog_posts
     blog_posts_archive_year (if supplied)
@@ -49,7 +53,9 @@ def blog_posts_processor(request, year=None, month=None, category_slug=None, ser
     """
     # is this user staff?  Determines published post display
     is_staff = request.user.is_staff
-    posts = Post.objects.build_query(require_published = not is_staff, year=year, month=month, category_slug=category_slug, series_slug=series_slug, tag=tag, require_featured=require_featured)
+    posts = Post.objects.build_query(require_published = not is_staff,
+    year=year, month=month, category_slug=category_slug,
+    series_slug=series_slug, tag=tag, require_featured=require_featured)
     
     if max_posts != None:
         posts = posts[start_post-1:max_posts]
@@ -75,16 +81,17 @@ def blog_posts_processor(request, year=None, month=None, category_slug=None, ser
 @context_processor
 def blog_post_processor(request, year, month, day, slug):
     """
-    Blog post processor
-    Returns a dictionary containing: blog_post
+    Return a dictionary containing: blog_post
     """
     # is this user staff?  Determines published post display
     is_staff = request.user.is_staff
     try:
         if is_staff:
-            post = Post.objects.get(publish_date__year=year, publish_date__month=month, publish_date__day=day, slug=slug)
+            post = Post.objects.get(publish_date__year=year,
+                publish_date__month=month, publish_date__day=day, slug=slug)
         else:
-            post = Post.objects.get(is_published=True, publish_date__year=year, publish_date__month=month, publish_date__day=day, slug=slug)
+            post = Post.objects.get(is_published=True, publish_date__year=year,
+                publish_date__month=month, publish_date__day=day, slug=slug)
             
         return {'blog_post': post}
     except Post.DoesNotExist:
@@ -93,20 +100,19 @@ def blog_post_processor(request, year, month, day, slug):
 @context_processor
 def blog_categories_processor(request):
     """
-    Categories processor
-    Returns a dictionary containing: blog_categories
+    Return a dictionary containing: blog_categories
     """
     return {'blog_categories': Category.objects.all()}
 
 @context_processor
 def blog_category_processor(request, slug):
     """
-    Category processor
-    Returns a dictionary containing: blog_category
+    Return a dictionary containing: blog_category
     """
     # is this user staff?  Determines published post display
     is_staff = request.user.is_staff
-    posts = Post.objects.build_query(require_published = not is_staff, category_slug=slug)
+    posts = Post.objects.build_query(
+        require_published = not is_staff, category_slug=slug)
     try:        
         category = Category.objects.get(slug=slug)
         return{'blog_category': category, 'blog_posts': posts}
@@ -116,20 +122,19 @@ def blog_category_processor(request, slug):
 @context_processor
 def blog_seriess_processor(request):
     """
-    Seriess processor
-    Returns a dictionary containing: blog_seriess
+    Return a dictionary containing: blog_seriess
     """
     return {'blog_seriess': Series.objects.all()}
 
 @context_processor
 def blog_series_processor(request, slug):
     """
-    Series processor
-    Returns a dictionary containing: blog_series
+    Return a dictionary containing: blog_series
     """
     # is this user staff?  Determines published post display
     is_staff = request.user.is_staff
-    posts = Post.objects.build_query(require_published = not is_staff, series_slug=slug)
+    posts = Post.objects.build_query(
+        require_published = not is_staff, series_slug=slug)
     try:
         series = Series.objects.get(slug=slug)
         return {'blog_series': series, 'blog_posts': posts}
@@ -139,8 +144,7 @@ def blog_series_processor(request, slug):
 @context_processor
 def blog_tags_processor(request):
     """
-    Tags processor
-    Returns a dictionary containing: blog_tags
+    Return a dictionary containing: blog_tags
     """
     return {
         'blog_tags': Tag.objects.usage_for_model(Post)
@@ -149,15 +153,16 @@ def blog_tags_processor(request):
 @context_processor
 def blog_tag_processor(request, tag):
     """
-    Tag processor
-    Returns a dictionary containing: blog_tag, blog_posts
+    Return a dictionary containing: blog_tag, blog_posts
     """
     # is this user staff?  Determines published post display
     is_staff = request.user.is_staff
     if not is_staff:
-        blog_posts = TaggedItem.objects.get_by_model(Post.objects.get_published_posts(), [tag,])
+        blog_posts = TaggedItem.objects.get_by_model(
+            Post.objects.get_published_posts(), [tag,])
     else:
-        blog_posts = TaggedItem.objects.get_by_model(Post.objects.all(), [tag,])
+        blog_posts = TaggedItem.objects.get_by_model(
+            Post.objects.all(), [tag,])
     return {
         'blog_tag': get_object_or_404(Tag, name=tag),
         'blog_posts': blog_posts,

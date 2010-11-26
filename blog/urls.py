@@ -1,4 +1,5 @@
 from django.conf.urls.shortcut import patterns
+
 from syndication import PostFeed
 
 urlpatterns = patterns('blog.views',

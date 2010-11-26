@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from django.db import models
 from django.contrib.comments.models import Comment
@@ -21,13 +21,10 @@ class Series(models.Model):
     slug = models.SlugField(unique=True)
     summary = models.TextField(blank=True)
     preface = models.TextField(blank=True)
-    created_on = models.DateTimeField(default=datetime.datetime.now)
+    created_on = models.DateTimeField(default=datetime.now)
     
     @models.permalink
     def get_absolute_url(self):
-        """
-        Returns the absolute url
-        """
         return ('blog.views.series_detail', [self.slug,])
 
     class Meta:
@@ -48,9 +45,6 @@ class Category(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        """
-        Returns the absolute url
-        """
         return ('blog.views.category_detail', [self.slug,])
     
     class Meta:
@@ -68,16 +62,19 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique_for_date='publish_date')
     author = models.ForeignKey(User)
-    publish_date = models.DateTimeField(default=datetime.datetime.now)
-    last_modified = models.DateTimeField(default=datetime.datetime.now)
+    publish_date = models.DateTimeField(default=datetime.now)
+    last_modified = models.DateTimeField(default=datetime.now)
     is_published = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False,)
     allow_comments = models.BooleanField(default=True)
-    categories = models.ManyToManyField(Category, blank=True, related_name='posts')
-    series = models.ForeignKey(Series, blank=True, null=True, related_name='posts')
+    categories = models.ManyToManyField(Category, blank=True,
+        related_name='posts')
+    series = models.ForeignKey(Series, blank=True, null=True,
+        related_name='posts')
     tags = TagField()
     meta_keywords = models.CharField(max_length=255, blank=True)
-    summary = models.TextField(help_text='Also doubles as the meta description')
+    summary = models.TextField(
+        help_text='Also doubles as the meta description')
     content = models.TextField()    
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
@@ -86,17 +83,20 @@ class Post(models.Model):
     
     @models.permalink
     def get_absolute_url(self):
-        """
-        Returns the absolute url
-        """
-        return ('blog.views.post_detail', ['%04d' % self.publish_date.year, '%02d' % self.publish_date.month, '%02d' % self.publish_date.day, self.slug,])
+        return ('blog.views.post_detail', [
+            '%04d' % self.publish_date.year,
+            '%02d' % self.publish_date.month,
+            '%02d' % self.publish_date.day,
+            self.slug,])
     
-    # Set the manager
     objects = PostManager()
     
     def save(self, *args, **kwargs):
-        if (getattr(settings, 'BLOG_PING_GOOGLE', False) == True) and (getattr(settings, 'DEBUG', True) == False):
-            if self.is_published and self.publish_date <= datetime.datetime.now():
+        if (
+            getattr(settings, 'BLOG_PING_GOOGLE', False) == True) \
+            and (getattr(settings, 'DEBUG', True) == False):
+            if self.is_published \
+                and self.publish_date <= datetime.now():
                 if not self.pk:
                     try:
                         ping_google()
@@ -124,22 +124,24 @@ class Post(models.Model):
     @property
     def post_categories_string(self):
         """
-        Returns the post categories in string format
+        Return the post categories in string format
         """
         return ', '.join([c.title for c in self.categories.all()])
             
     
     def get_previous_post(self):
         """
-        Gets the previous post by publish_date
+        Get the previous post by publish_date
         """
-        return self.get_previous_by_publish_date(is_published=True, publish_date__lt=datetime.datetime.now)
+        return self.get_previous_by_publish_date(is_published=True,
+            publish_date__lt=datetime.now)
  
     def get_next_post(self):
         """
-        Gets the next post by publish_date
+        Get the next post by publish_date
         """
-        return self.get_next_by_publish_date(is_published=True, publish_date__lt=datetime.datetime.now)
+        return self.get_next_by_publish_date(is_published=True,
+            publish_date__lt=datetime.now)
     
 class PostImage(models.Model):
     """
@@ -149,7 +151,9 @@ class PostImage(models.Model):
     title = models.CharField(max_length=255)
     summary = models.TextField(blank=True)
     image = models.ImageField(upload_to="apps/blogyall/images")
-    gallery_position = models.PositiveIntegerField(blank=True, null=True, help_text="Post Images without a Gallery Position will not appear in the post's gallery images")
+    gallery_position = models.PositiveIntegerField(blank=True, null=True,
+        help_text="Post Images without a Gallery Position will not appear in " \
+        "the post's gallery images")
     
     objects = PostImageManager()
     

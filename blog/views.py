@@ -6,9 +6,15 @@ from tagging.models import Tag, TaggedItem
 
 from models import Post, Category, Series
 
-from context_processors import *
+from context_processors import blog_posts_processor, blog_post_processor, \
+    blog_categories_processor, blog_category_processor, \
+    blog_seriess_processor, blog_series_processor, \
+    blog_tags_processor, blog_tag_processor
+     
 
-def post_index(request, year=None, month=None, category_slug=None, series_slug=None, tag=None, start_post=1, max_posts=None, template_name="blog/post/index.html"):
+def post_index(request, year=None, month=None, category_slug=None,
+    series_slug=None, tag=None, start_post=1, max_posts=None,
+    template_name="blog/post/index.html"):
     """
     Post Index
     """
@@ -16,11 +22,14 @@ def post_index(request, year=None, month=None, category_slug=None, series_slug=N
         template_name,
         context_instance=RequestContext(
             request,
-            processors=[blog_posts_processor(year=year, month=month, category_slug=category_slug, series_slug=series_slug, tag=tag, start_post=start_post, max_posts=max_posts),]
+            processors=[blog_posts_processor(year=year, month=month,
+                category_slug=category_slug, series_slug=series_slug,
+                tag=tag, start_post=start_post, max_posts=max_posts),]
         )
     )
 
-def post_archive(request, year=None, month=None, template_name="blog/post/archive.html"):
+def post_archive(request, year=None, month=None,
+    template_name="blog/post/archive.html"):
     """
     Post Index
     """
@@ -32,7 +41,8 @@ def post_archive(request, year=None, month=None, template_name="blog/post/archiv
         )
     )
 
-def post_detail(request, year, month, day, slug, template_name="blog/post/detail.html"):
+def post_detail(request, year, month, day, slug,
+    template_name="blog/post/detail.html"):
     """
     Post Detail
     """
@@ -40,7 +50,8 @@ def post_detail(request, year, month, day, slug, template_name="blog/post/detail
         template_name,
         context_instance=RequestContext(
             request,
-            processors=[blog_post_processor(year=year, month=month, day=day, slug=slug),]
+            processors=[blog_post_processor(year=year, month=month, day=day,
+                slug=slug),]
         )
     )
 
