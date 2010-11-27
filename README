@@ -32,5 +32,11 @@ Make sure the webserver has write-permission to that folder.
 
 Notes: Settings
 ===============
+Default blogyall settings are in the settings module (settings.py). Variables
+can be overriden by setting the variables in your project's settings.py module.
+
+Notes: Settings: Ping Google
+============================
 To have the blog app attempt to ping google when a published blog post is saved,
 set BLOG_PING_GOOGLE=True in your settings.py
+
