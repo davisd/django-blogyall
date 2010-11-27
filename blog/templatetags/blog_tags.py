@@ -17,18 +17,15 @@ def lit_or_val(var, context):
     Return a literal string or numeric value, or the value of the variable
     resolved from the context
     """
-    if var == None:
+    if not var:
         return None
     if var[0] == var[-1] and var[0] in ('"', "'"):
-        if len(var) < 3:
-            return ''
-        else:
-            return var[1:-1]
+        return var[1:-1]
     else:
         try:
             return float(var)
         except ValueError:
-            return template.Variable(var).resolve(context) # resolve value
+            return template.Variable(var).resolve(context)
 
 class BlogCategoriesNode(template.Node):
     def __init__(self, var_name):
