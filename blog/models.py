@@ -7,10 +7,11 @@ from django.contrib.contenttypes import generic
 from django.contrib.sitemaps import ping_google
 from django.contrib.comments.moderation import CommentModerator, moderator
 from django.db.models import permalink
-from django.conf import settings
 
 from tagging.models import Tag, TaggedItem
 from tagging.fields import TagField
+
+import settings
 
 from managers import PostManager, PublishedPostManager, PostImageManager
 
@@ -174,9 +175,16 @@ class PostImage(models.Model):
         ordering = ('post', 'gallery_position', 'title',)
 
 class PostModerator(CommentModerator):
-    email_notification = True
-    auto_moderate_field='publish_date'
-    moderate_after=7
+    """
+    Blog post comment moderator
+    """
     enable_field='allow_comments'
+    email_notification = getattr(settings, 'BLOG_COMMENTS_EMAIL_NOTIFICATION', False)
+    if getattr(settings, 'BLOG_COMMENTS_AUTO_MODERATE', False):
+        auto_moderate_field='publish_date'
+        moderate_after=getattr(settings, 'BLOG_COMMENTS_MODERATE_AFTER', None)
+    if getattr(settings, 'BLOG_COMMENTS_AUTO_CLOSE', False):
+        auto_close_field='publish_date'
+        close_after=getattr(settings, 'BLOG_COMMENTS_CLOSE_AFTER', None)
 
 moderator.register(Post, PostModerator)
