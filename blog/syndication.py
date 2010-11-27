@@ -15,7 +15,7 @@ class PostFeed(Feed):
         self.description = description
         
     def items(self):
-        return Post.objects.get_published_posts().order_by('-publish_date')
+        return Post.published.all()
     
     def item_title(self, item):
         return item.title

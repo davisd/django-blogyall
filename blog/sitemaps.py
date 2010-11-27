@@ -6,7 +6,7 @@ class PostSitemap(Sitemap):
     Post sitemap
     """
     def items(self):
-        return Post.objects.get_published_posts()
+        return Post.published.all()
 
     def lastmod(self, obj):
         return obj.last_modified

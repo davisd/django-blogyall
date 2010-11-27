@@ -92,6 +92,7 @@ class Post(models.Model):
             self.slug,])
     
     objects = PostManager()
+    published = PublishedPostManager()
     
     def save(self, *args, **kwargs):
         if (
