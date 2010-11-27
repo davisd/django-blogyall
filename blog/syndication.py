@@ -1,5 +1,4 @@
 from models import Post
-from django.conf import settings
 
 from django.contrib.syndication.views import Feed
 
