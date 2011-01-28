@@ -162,7 +162,11 @@ class PostImage(models.Model):
     post = models.ForeignKey(Post, related_name="images")
     title = models.CharField(max_length=255)
     summary = models.TextField(blank=True)
-    image = models.ImageField(upload_to="apps/blogyall/images")
+    image = models.ImageField(
+        upload_to=lambda i,fn:'/'.join(
+            ['apps', 'blogyall', 'images',
+             i.post.publish_date.strftime('%Y-%m-%d'), i.post.slug, fn]
+        ))
     gallery_position = models.PositiveIntegerField(blank=True, null=True,
         help_text="Post Images without a Gallery Position will not appear in " \
         "the post's gallery images")
