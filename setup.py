@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='django-blogyall',
-    version='1.2.2.dev',
+    version='1.2.2',
     author='David Davis',
     author_email='davisd@davisd.com',
     packages=['blog','blog.templatetags'],
