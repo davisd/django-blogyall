@@ -1,3 +1,6 @@
 #.gitignore
 *.pyc
 *.wpr
+
+MANIFEST
+/dist/
