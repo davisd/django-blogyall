@@ -7,6 +7,7 @@ setup(
     author_email='davisd@davisd.com',
     packages=['blog','blog.templatetags'],
     url='http://www.davisd.com/projects/django-blogyall',
+    data_files=[('.',['LICENSE'])],
     license='LICENSE',
     description='django-blogyall is the reusable blog application developed '\
     'for www.davisd.com',
