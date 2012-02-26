@@ -22,3 +22,7 @@ class PostFeed(Feed):
     
     def item_description(self, item):
         return item.content
+
+    def item_pubdate(self, item):
+        return item.publish_date
+
