@@ -11,7 +11,7 @@ from django.db.models import permalink
 from tagging.models import Tag, TaggedItem
 from tagging.fields import TagField
 
-import settings
+from django.conf import settings
 
 from managers import PostManager, PublishedPostManager, PostImageManager
 
